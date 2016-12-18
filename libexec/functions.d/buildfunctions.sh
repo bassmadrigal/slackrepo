@@ -202,6 +202,11 @@ function build_item_packages
         sed -i -e "s;^\./configure ;LDFLAGS=\"-L/usr/lib$libdirsuffix\" &;" "$MYTMPIN/$itemfile"
       fi
       ;;
+    'c++11' )
+      # Used to add C++11 support to CXXFLAGS
+      log_info -a "Pragma: c++11"
+      sed -i -e 's/^CXXFLAGS="/&-std=c++11 /' "$MYTMPIN/$itemfile"
+      ;;
     'stubs-32' )
       if [ "$SYS_ARCH" = 'x86_64' ] && [ ! -e /usr/include/gnu/stubs-32.h ]; then
         log_info -a "Pragma: stubs-32"
