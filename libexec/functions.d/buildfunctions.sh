@@ -202,6 +202,13 @@ function build_item_packages
         sed -i -e "s;^\./configure ;LDFLAGS=\"-L/usr/lib$libdirsuffix\" &;" "$MYTMPIN/$itemfile"
       fi
       ;;
+    'python3' )
+      # Add python3 if/then check to python SlackBuild
+      log_info -a "Pragma: python3"
+      SEARCH="python setup.py install --root=\\\$PKG"
+      ADD="if \\\$(python3 -c 'import sys' 2>/dev/null); then\n python3 setup.py install --root=\\\$PKG\nfi"
+      sed -i -e "/$SEARCH/a$ADD" "$MYTMPIN/$itemfile"
+      ;;
     'stubs-32' )
       if [ "$SYS_ARCH" = 'x86_64' ] && [ ! -e /usr/include/gnu/stubs-32.h ]; then
         log_info -a "Pragma: stubs-32"
