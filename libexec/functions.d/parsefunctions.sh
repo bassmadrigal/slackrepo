@@ -451,7 +451,7 @@ function parse_info_and_hints
   if [ -n "${HINTFILE[$itemid]}" ] && [ -s "${HINTFILE[$itemid]}" ]; then
     local SKIP \
           VERSION ADDREQUIRES OPTIONS GROUPADD USERADD CONFLICTS INSTALL NUMJOBS ANSWER CLEANUP \
-          PRAGMA SPECIAL ARCH DOWNLOAD MD5SUM SHA256SUM
+          PRAGMA SPECIAL ARCH DOWNLOAD MD5SUM SHA256SUM DELREQUIRES
     . "${HINTFILE[$itemid]}"
 
     # Process the hint file's variables individually (looping for each variable would need
@@ -581,7 +581,8 @@ function parse_info_and_hints
       ${DOWNLOAD+"DOWNLOAD=\"$DOWNLOAD\""} \
       ${MD5SUM+"MD5SUM=\"$MD5SUM\""} \
       ${SHA256SUM+"SHA256SUM=\"$SHA256SUM\""} \
-      ${ADDREQUIRES+"ADDREQUIRES=\"$ADDREQUIRES\""} )"
+      ${ADDREQUIRES+"ADDREQUIRES=\"$ADDREQUIRES\""} \
+      ${DELREQUIRES+"DELREQUIRES=\"$DELREQUIRES\""} )"
 
     unset VERSION OPTIONS GROUPADD USERADD \
           CONFLICTS \
@@ -603,6 +604,13 @@ function parse_info_and_hints
       INFOREQUIRES[$itemid]=""
     fi
   else
+    # If DELREQUIRES is set, remove those entries from the INFOREQUIRES array
+    if [ -v DELREQUIRES ]; then
+      for DELREQ in ${DELREQUIRES[@]}; do
+        INFOREQUIRES[$itemid]="$(echo ${INFOREQUIRES[$itemid]//$DELREQ/})"
+      done
+    fi
+
     # Get rid of %README% silently, and append ADDREQUIRES
     INFOREQUIRES[$itemid]="$(echo ${INFOREQUIRES[$itemid]//%README%/} ${ADDREQUIRES})"
   fi
