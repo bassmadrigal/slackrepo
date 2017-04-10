@@ -206,6 +206,12 @@ function build_item_packages
       # Used to add C++11 support to CXXFLAGS
       log_info -a "Pragma: c++11"
       sed -i -e 's/^CXXFLAGS="/&-std=c++11 /' "$MYTMPIN/$itemfile"
+    'python3' )
+      # Add python3 if/then check to python SlackBuild
+      log_info -a "Pragma: python3"
+      SEARCH="python setup.py install --root=\\\$PKG"
+      ADD="if \\\$(python3 -c 'import sys' 2>/dev/null); then\n python3 setup.py install --root=\\\$PKG\nfi"
+      sed -i -e "/$SEARCH/a$ADD" "$MYTMPIN/$itemfile"
       ;;
     'stubs-32' )
       if [ "$SYS_ARCH" = 'x86_64' ] && [ ! -e /usr/include/gnu/stubs-32.h ]; then
